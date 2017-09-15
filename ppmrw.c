@@ -62,14 +62,6 @@ void convert_to_p3(char* outfile) {
 	fwrite(&newline, sizeof(char), 1, file_handle_out);
 	fprintf(file_handle_out, "%d", max_color_value); // write maxval
 	fwrite(&newline, sizeof(char), 1, file_handle_out);
-	/*
-	fprintf(file_handle_out, "%d", pixmap1d[0].r); // write red value
-	fwrite(&newline, sizeof(char), 1, file_handle_out);
-	fprintf(file_handle_out, "%d", pixmap1d[0].g); // write green value
-	fwrite(&newline, sizeof(char), 1, file_handle_out);
-	fprintf(file_handle_out, "%d", pixmap1d[0].b); // write blue value
-	fwrite(&newline, sizeof(char), 1, file_handle_out);
-	*/
 	// write each pixel from the raster
 	for (int i = 0; i < width*height; i += 1) {
 		fprintf(file_handle_out, "%d", pixmap1d[i].r); // write red value
@@ -90,6 +82,8 @@ void convert_to_p6(char* outfile) {
 	printf("Converting to P6 . . .\n");
 	// initialize file for writing binary data
 	FILE* file_handle_out = fopen(outfile, "wb");
+	// var to hold magic number for writing purposes
+	int t = 6;
 	// copy header data
 	fwrite(&p, sizeof(char), 1, file_handle_out); // write P
 	fprintf(file_handle_out, "%d", 6); // write magic number
@@ -104,12 +98,12 @@ void convert_to_p6(char* outfile) {
 	fwrite(&newline, sizeof(char), 1, file_handle_out);
 	// write each pixel from the raster
 	for (int i = 0; i < width*height; i += 1) {
-		fprintf(file_handle_out, "%d", pixmap1d[i].r); // write red value
-		fwrite(&newline, sizeof(char), 1, file_handle_out);
-		fprintf(file_handle_out, "%d", pixmap1d[i].g); // write green value
-		fwrite(&newline, sizeof(char), 1, file_handle_out);
-		fprintf(file_handle_out, "%d", pixmap1d[i].b); // write blue value
-		fwrite(&newline, sizeof(char), 1, file_handle_out);
+		fwrite(&pixmap1d[i].r, sizeof(char), 1, file_handle_out); // write red value
+		//fwrite(&newline, sizeof(char), 1, file_handle_out);
+		fwrite(&pixmap1d[i].g, sizeof(char), 1, file_handle_out); // write green value
+		//fwrite(&newline, sizeof(char), 1, file_handle_out);
+		fwrite(&pixmap1d[i].b, sizeof(char), 1, file_handle_out); // write blue value
+		//fwrite(&newline, sizeof(char), 1, file_handle_out);
 	}
 	// close file
 	fclose(file_handle_out);
