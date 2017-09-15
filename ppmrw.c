@@ -7,14 +7,15 @@
 
 // struct representing pixel
 typedef struct Pixel {
-	unsigned char r, g, b, a;
+	unsigned char r, g, b;
 } Pixel;
 
 // declare variables
 // NOTE: p = dummy char variable, t = input file ppm type,
 //       w = dummy char variable for traversing white space
-int p, t, w, target_ppm_type, width, height, max_color_value;
+int p, t, target_ppm_type, width, height, max_color_value;
 Pixel* pixmap1d; // one dimensional array to hold pixel data
+Pixel test_pixel;
 
 // Function traverses white space until a character that is not a space, newline,
 // or a comment line
@@ -106,8 +107,7 @@ int main(int argc, char *argv[]) {
 	}
 	// store the target file type in target_ppm_type
 	target_ppm_type = atoi(argv[1]);
-	// always read binary when working on windows
-	// TODO: figure our if this is necessary now that I'm developing on a linux machine
+	// always read binary
 	FILE* file_handle_in = fopen(argv[2], "rb"); // open file for reading
 	// read in file header
 	p = fgetc(file_handle_in); // store first character in dummy variable
@@ -134,6 +134,7 @@ int main(int argc, char *argv[]) {
 	}
 	// traverse white space until pixel data is reached
 	traverse_whitespace(file_handle_in);
+
 	// allocate memory based on file size
 	pixmap1d = malloc(sizeof(Pixel)*width*height);
 	// declare variables for color values
@@ -152,11 +153,14 @@ int main(int argc, char *argv[]) {
 			break;
 		case 6:
 			// P6, binary data, rgb
+			/*
+			fread(&test_pixel, sizeof(Pixel), 1, file_handle_in);
+			printf("Red value: %d, green value: %d, blue value: %d\n", test_pixel.r, test_pixel.g, test_pixel.b);
+			fread(&test_pixel, sizeof(Pixel), 1, file_handle_in);
+			printf("Red value: %d, green value: %d, blue value: %d\n", test_pixel.r, test_pixel.g, test_pixel.b);
+			*/
 			for (int i = 0; i < (width*height); i += 1) {
-				fscanf(file_handle_in, "%d" "%d" "%d", &r_value, &g_value, &b_value);
-				pixmap1d[i].r = r_value;
-				pixmap1d[i].g = g_value;
-				pixmap1d[i].b = b_value;
+				fread(&pixmap1d[i], sizeof(Pixel), 1, file_handle_in);
 				printf("Red value: %d, green value: %d, blue value: %d\n", pixmap1d[i].r, pixmap1d[i].g, pixmap1d[i].b);
 			}
 	}
