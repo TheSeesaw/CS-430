@@ -179,6 +179,6 @@ int main(int argc, char *argv[]) {
 	default:
 		fprintf(stderr, "Error: Invalid file.");
 	}
-	
+
 	return 1;
 }
