@@ -1,5 +1,4 @@
-// CS430_Project1.cpp : Defines the entry point for the console application.
-//
+// program converts between p3 and p6 type .ppm images
 // By: Kristoffer Schindele
 #include <stdlib.h>
 #include <stdio.h>
@@ -163,14 +162,12 @@ int main(int argc, char *argv[]) {
 				pixmap1d[i].r = r_value;
 				pixmap1d[i].g = g_value;
 				pixmap1d[i].b = b_value;
-				//printf("Red value: %d, green value: %d, blue value: %d\n", pixmap1d[i].r, pixmap1d[i].g, pixmap1d[i].b);
 			}
 			break;
 		case 6:
 			// P6, binary data, rgb
 			for (int i = 0; i < (width*height); i += 1) {
 				fread(&pixmap1d[i], sizeof(Pixel), 1, file_handle_in);
-				//printf("Red value: %d, green value: %d, blue value: %d\n", pixmap1d[i].r, pixmap1d[i].g, pixmap1d[i].b);
 			}
 	}
 	// ppm data is now stored in pixmap1d
