@@ -16,8 +16,9 @@ typedef struct Pixel {
 int p, t, w, target_ppm_type, width, height, max_color_value;
 Pixel* pixmap1d;
 
-// convert to p3 function
-
+// Function converts either P3 or P6 type ppm files to a P3 type ppm file
+// Params - outfile: the new file to write to
+// Returns - Nothing
 void convertP3(char* outfile) {
 	// detect which file type is being converted to P3
 	// writing ASCII data
@@ -68,8 +69,10 @@ void convertP3(char* outfile) {
 	*/
 }
 
-int main(int argc, char *argv[]) {
 
+// Main function performs error checking, reads in data from file, and decides
+// which conversion function to run based on that file.
+int main(int argc, char *argv[]) {
 	// argument checking
 	if (argc != 4) {
 		fprintf(stderr, "Error: Invalid number of arguments.");
@@ -82,17 +85,17 @@ int main(int argc, char *argv[]) {
 	// store the target file type in target_ppm_type
 	target_ppm_type = atoi(argv[1]);
 	// always read binary when working on windows
+	// TODO: figure our if this is necessary now that I'm developing on a linux machine
 	FILE* file_handle_in = fopen(argv[2], "rb"); // open file for reading
-	// check file header for type
 	// read in file header
-	// store first character in dummy variable
-	p = fgetc(file_handle_in);
-	// store MAGIC NUMBER in t
-	t = fgetc(file_handle_in);
+	p = fgetc(file_handle_in); // store first character in dummy variable
+	t = fgetc(file_handle_in); // store MAGIC NUMBER in t
 	// travel through whitespace until a new character is reached
+	// NOTE: fgetc advances the cursor each time it grabs a character
+	// TODO: factor out traversal function
 	w = fgetc(file_handle_in);
 	while (w == ' ' || w == '\n') {
-		printf("banana");
+		printf("whitespace\n");
 		if (w == '#') {
 			while (w != '\n') {
 				w = fgetc(file_handle_in);
@@ -143,33 +146,28 @@ int main(int argc, char *argv[]) {
 	w = ungetc(w, file_handle_in);
 	// allocate memory based on file size
 	pixmap1d = malloc(sizeof(Pixel)*width*height);
+	// declare variables for color values
+	int r_value, g_value, b_value;
 	// read data into buffer
 	switch (t) {
-	case 3:
-		//P3, data stored in ASCII, rgb
-		int r_value;
-		int g_value;
-		int b_value;
-		for (int i = 0; i < (width*height); i += 1) {
-			fscanf(file_handle_in, "%d" "%d" "%d", &r_value, &g_value, &b_value);
-			pixmap1d[i].r = r_value;
-			pixmap1d[i].g = g_value;
-			pixmap1d[i].b = b_value;
-		}
-		break;
-		/*
-	case 6:
-		// P6, binary data, rgb
-		int r_value;
-		int g_value;
-		int b_value;
-		for (int i = 0; i < (width*height); i += 1) {
-			fscanf(file_handle_in, "%d" "%d" "%d", &r_value, &g_value, &b_value);
-			pixmap1d[i].r = r_value;
-			pixmap1d[i].g = g_value;
-			pixmap1d[i].b = b_value;
-		}
-		*/
+		case 3:
+			// P3, data stored in ASCII, rgb
+
+			for (int i = 0; i < (width*height); i += 1) {
+				fscanf(file_handle_in, "%d" "%d" "%d", &r_value, &g_value, &b_value);
+				pixmap1d[i].r = r_value;
+				pixmap1d[i].g = g_value;
+				pixmap1d[i].b = b_value;
+			}
+			break;
+		case 6:
+			// P6, binary data, rgb
+			for (int i = 0; i < (width*height); i += 1) {
+				fscanf(file_handle_in, "%d" "%d" "%d", &r_value, &g_value, &b_value);
+				pixmap1d[i].r = r_value;
+				pixmap1d[i].g = g_value;
+				pixmap1d[i].b = b_value;
+			}
 	}
 	// jump to appropriate routine
 	// argument supplied in command line determines the format to be converted TO
@@ -177,6 +175,9 @@ int main(int argc, char *argv[]) {
 	switch (target_ppm_type) {
 	case 3:
 		convertP3(argv[3]);
+		break;
+	case 6:
+		// TODO: function that converts P3 and P6 to P6
 		break;
 	default:
 		fprintf(stderr, "Error: Invalid file.");
