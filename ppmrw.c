@@ -16,6 +16,9 @@ typedef struct Pixel {
 int p, t, target_ppm_type, width, height, max_color_value;
 Pixel* pixmap1d; // one dimensional array to hold pixel data
 Pixel test_pixel;
+unsigned char space = ' ';
+unsigned char newline = '\n';
+unsigned char hash = '#';
 
 // Function traverses white space until a character that is not a space, newline,
 // or a comment line
@@ -43,64 +46,74 @@ void traverse_whitespace(FILE* file_to_read) {
 // Function converts either P3 or P6 type ppm files to a P3 type ppm file
 // Params - outfile: the new file to write to
 // Returns - NOTHING
-void convertP3(char* outfile) {
-	// initialize a file for writing
-	FILE* file_handle_out;
-	// initialize some char variables
-	unsigned char space = ' ';
-	unsigned char newline = '\n';
-	unsigned char hash = '#';
-	// detect which file type is being converted to P3
-	if (t == 3) { // P3 type
-		// writing ASCII data
-		file_handle_out = fopen(outfile, "w");
-		// copy header data
-		fwrite(&p, sizeof(char), 1, file_handle_out); // write P
-		fprintf(file_handle_out, "%d", t); // write magic number
-		fwrite(&newline, sizeof(char), 1, file_handle_out);
-		fwrite(&hash, sizeof(char), 1, file_handle_out); // write a hash
-		fwrite(&newline, sizeof(char), 1, file_handle_out);
-		fprintf(file_handle_out, "%d", width); // write width
-		fwrite(&space, sizeof(char), 1, file_handle_out);
-		fprintf(file_handle_out, "%d", height); // write height
-		fwrite(&newline, sizeof(char), 1, file_handle_out);
-		fprintf(file_handle_out, "%d", max_color_value); // write maxval
-		fwrite(&newline, sizeof(char), 1, file_handle_out);
-		// write each pixel from the raster
-		for (int i = 0; i < width*height; i += 1) {
-			fprintf(file_handle_out, "%d", pixmap1d[i].r); // write red value
-			fwrite(&newline, sizeof(char), 1, file_handle_out);
-			fprintf(file_handle_out, "%d", pixmap1d[i].g); // write green value
-			fwrite(&newline, sizeof(char), 1, file_handle_out);
-			fprintf(file_handle_out, "%d", pixmap1d[i].b); // write blue value
-			fwrite(&newline, sizeof(char), 1, file_handle_out);
-		}
-		// close file
-		fclose(file_handle_out);
-	}
-	/*
-	else {
-	// convert to P6 (ASCII to binary)
-	file_handle_out = fopen(argv[3], "wb");
+void convert_to_p3(char* outfile) {
+	printf("Converting to P3 . . .\n");
+	// initialize a file for writing ASCII data
+	FILE* file_handle_out = fopen(outfile, "w");
 	// copy header data
-	// write magic number
-	fwrite(p, sizeof(char), 1, file_handle_out);
-	fwrite(t, sizeof(char), 1, file_handle_out);
-	fwrite(space, sizeof(char), 1, file_handle_out);
-	// write width
-	fwrite(width, sizeof(char), 1, file_handle_out);
-	fwrite(space, sizeof(char), 1, file_handle_out);
-	// write height
-	fwrite(height, sizeof(char), 1, file_handle_out);
-	fwrite(space, sizeof(char), 1, file_handle_out);
-	// write maxval
-	fwrite(max_color_value, sizeof(char), 1, file_handle_out);
-	fwrite(space, sizeof(char), 1, file_handle_out);
-	// write raster
-	}
+	fwrite(&p, sizeof(char), 1, file_handle_out); // write P
+	fprintf(file_handle_out, "%d", 3); // write magic number
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fwrite(&hash, sizeof(char), 1, file_handle_out); // write a hash
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", width); // write width
+	fwrite(&space, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", height); // write height
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", max_color_value); // write maxval
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	/*
+	fprintf(file_handle_out, "%d", pixmap1d[0].r); // write red value
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", pixmap1d[0].g); // write green value
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", pixmap1d[0].b); // write blue value
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
 	*/
+	// write each pixel from the raster
+	for (int i = 0; i < width*height; i += 1) {
+		fprintf(file_handle_out, "%d", pixmap1d[i].r); // write red value
+		fwrite(&newline, sizeof(char), 1, file_handle_out);
+		fprintf(file_handle_out, "%d", pixmap1d[i].g); // write green value
+		fwrite(&newline, sizeof(char), 1, file_handle_out);
+		fprintf(file_handle_out, "%d", pixmap1d[i].b); // write blue value
+		fwrite(&newline, sizeof(char), 1, file_handle_out);
+	}
+	// close file
+	fclose(file_handle_out);
 }
 
+// Function converts either P3 or P6 type ppm files to a P6 type ppm file
+// Params - outfile: the new file to write to
+// Returns - NOTHING
+void convert_to_p6(char* outfile) {
+	printf("Converting to P6 . . .\n");
+	// initialize file for writing binary data
+	FILE* file_handle_out = fopen(outfile, "wb");
+	// copy header data
+	fwrite(&p, sizeof(char), 1, file_handle_out); // write P
+	fprintf(file_handle_out, "%d", 6); // write magic number
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fwrite(&hash, sizeof(char), 1, file_handle_out); // write a hash
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", width); // write width
+	fwrite(&space, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", height); // write height
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	fprintf(file_handle_out, "%d", max_color_value); // write maxval
+	fwrite(&newline, sizeof(char), 1, file_handle_out);
+	// write each pixel from the raster
+	for (int i = 0; i < width*height; i += 1) {
+		fprintf(file_handle_out, "%d", pixmap1d[i].r); // write red value
+		fwrite(&newline, sizeof(char), 1, file_handle_out);
+		fprintf(file_handle_out, "%d", pixmap1d[i].g); // write green value
+		fwrite(&newline, sizeof(char), 1, file_handle_out);
+		fprintf(file_handle_out, "%d", pixmap1d[i].b); // write blue value
+		fwrite(&newline, sizeof(char), 1, file_handle_out);
+	}
+	// close file
+	fclose(file_handle_out);
+}
 
 // Main function performs error checking, reads in data from file, and decides
 // which conversion function to run based on that file.
@@ -171,10 +184,10 @@ int main(int argc, char *argv[]) {
 	// switch based on target ppm type
 	switch (target_ppm_type) {
 	case 3:
-		convertP3(argv[3]);
+		convert_to_p3(argv[3]);
 		break;
 	case 6:
-		// TODO: function that converts P3 and P6 to P6
+		convert_to_p6(argv[3]);
 		break;
 	default:
 		fprintf(stderr, "Error: Invalid file.");
