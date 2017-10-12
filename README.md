@@ -1,8 +1,7 @@
 # CS-430
-Converts P3 and P6 images.
+Takes in a CSV file and builds a scene based on the shape data within. Outputs a
+P3 image representing a view of the scene.
 
-Throws errors for no file, invalid file, invalid max value, and invalid header.
+Usage:$ raycast width height [input file] output.ppm
 
-Extracts magic number, width, height, max value, and raster from the input file.
-
-Usage:$ program [ppm type to write to] [file read from] [file write to]
+Known Issues:
